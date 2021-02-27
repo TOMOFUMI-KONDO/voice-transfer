@@ -13,6 +13,8 @@ public class VoiceReceiver {
         final byte[] buffer = new byte[PACKET_SIZE];
         final DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 
+        System.out.println("VoiceReceiverが起動しました。(port=" + SERVER_PORT + ")");
+
         VoicePlayer player;
         try {
             player = new VoicePlayer();
@@ -23,8 +25,6 @@ public class VoiceReceiver {
         player.start();
 
         try (final DatagramSocket socket = new DatagramSocket(SERVER_PORT)) {
-            System.out.println("VoiceReceiverが起動しました。(port=" + socket.getLocalPort() + ")");
-
             while (true) {
                 socket.receive(packet);
                 player.setVoice(buffer);

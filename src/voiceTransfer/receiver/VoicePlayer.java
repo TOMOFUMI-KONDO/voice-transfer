@@ -20,6 +20,8 @@ public class VoicePlayer extends Thread {
         this.source = (SourceDataLine) AudioSystem.getLine(info);
         this.source.open(linear);
         this.source.start();
+
+        System.out.println("VoicePlayerが起動しました。");
     }
 
     public void run() {
@@ -38,6 +40,8 @@ public class VoicePlayer extends Thread {
         this.isPlaying = false;
         this.source.stop();
         this.source.close();
+
+        System.out.println("VoicePlayerが終了しました。");
     }
 
     public boolean getIsPlaying() {

@@ -23,6 +23,8 @@ public class VoiceListener extends Thread {
 
         this.stream = new AudioInputStream(target);
         this.isListening = true;
+
+        System.out.println("VoiceListenerが起動しました。");
     }
 
     public void run() {
@@ -45,6 +47,8 @@ public class VoiceListener extends Thread {
         this.isListening = false;
         this.target.stop();
         this.target.close();
+
+        System.out.println("VoiceListenerが終了しました。");
     }
 
     public boolean getIsListening() {

@@ -17,6 +17,8 @@ public class VoiceSender {
         final int port = args.length > 1 ? Integer.parseInt(args[1]) : DEFAULT_SERVER_PORT;
         final InetSocketAddress address = new InetSocketAddress(host, port);
 
+        System.out.println("VoiceSenderが起動しました(host=" + host + ",port= " + port + ")");
+        
         VoiceListener listener;
         try {
             listener = new VoiceListener();
@@ -27,7 +29,6 @@ public class VoiceSender {
         listener.start();
 
         try (final DatagramSocket socket = new DatagramSocket()) {
-            System.out.println("VoiceSenderが起動しました(host=" + host + ",port= " + port + ")");
 
             int count = 0;
             while (true) {
