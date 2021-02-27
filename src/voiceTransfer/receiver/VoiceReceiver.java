@@ -24,6 +24,9 @@ public class VoiceReceiver {
         }
         player.start();
 
+        Runtime.getRuntime().addShutdownHook(new Thread(player::end));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> System.out.println("VoiceReceiverが終了しました。")));
+
         try (final DatagramSocket socket = new DatagramSocket(SERVER_PORT)) {
             while (true) {
                 socket.receive(packet);

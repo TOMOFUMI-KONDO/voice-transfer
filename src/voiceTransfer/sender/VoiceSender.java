@@ -18,7 +18,7 @@ public class VoiceSender {
         final InetSocketAddress address = new InetSocketAddress(host, port);
 
         System.out.println("VoiceSenderが起動しました(host=" + host + ",port= " + port + ")");
-        
+
         VoiceListener listener;
         try {
             listener = new VoiceListener();
@@ -27,6 +27,9 @@ public class VoiceSender {
             return;
         }
         listener.start();
+
+        Runtime.getRuntime().addShutdownHook(new Thread(listener::end));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> System.out.println("VoiceSenderが終了しました。")));
 
         try (final DatagramSocket socket = new DatagramSocket()) {
 
