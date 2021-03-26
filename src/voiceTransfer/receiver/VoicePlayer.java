@@ -9,25 +9,27 @@ public class VoicePlayer extends Thread {
 
     private final SourceDataLine source;
     private boolean isPlaying;
-    private byte[] voice = new byte[HZ * BITS / 8 * MONO];
+    private byte[] voice;
 
     public VoicePlayer() throws LineUnavailableException {
-        this.isPlaying = true;
-
+        this.voice = new byte[HZ * BITS / 8 * MONO];
         AudioFormat linear = new AudioFormat(HZ, BITS, MONO, true, false);
         DataLine.Info info = new DataLine.Info(SourceDataLine.class, linear);
 
         this.source = (SourceDataLine) AudioSystem.getLine(info);
         this.source.open(linear);
-        this.source.start();
+    }
 
+    @Override
+    public void start() {
+        this.source.start();
+        this.isPlaying = true;
         System.out.println("VoicePlayerが起動しました。");
     }
 
+    @Override
     public void run() {
-        while (true) {
-            if (!this.isPlaying) return;
-
+        while (this.isPlaying) {
             this.source.write(this.voice, 0, this.voice.length);
         }
     }

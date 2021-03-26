@@ -11,15 +11,15 @@ public class ReceiveButtonListener implements ActionListener {
 
     public ReceiveButtonListener() throws SocketException {
         this.receiver = new VoiceReceiver();
+        this.receiver.start();
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        System.out.println(this.receiver.getIsReceiving());
-        if (this.receiver.getIsReceiving()) {
-            this.receiver.end();
+        if (this.receiver.getIsPlaying()) {
+            this.receiver.stopPlaying();
         } else {
-            this.receiver.start();
+            this.receiver.startPlaying();
         }
     }
 }
