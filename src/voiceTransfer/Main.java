@@ -2,6 +2,7 @@ package voiceTransfer;
 
 import voiceTransfer.frame.VoiceTransferFrame;
 
+import javax.sound.sampled.LineUnavailableException;
 import javax.swing.*;
 import java.net.SocketException;
 
@@ -10,7 +11,7 @@ public class Main {
         JFrame frame;
         try {
             frame = new VoiceTransferFrame();
-        } catch (SocketException e) {
+        } catch (SocketException | LineUnavailableException e) {
             e.printStackTrace();
             return;
         }

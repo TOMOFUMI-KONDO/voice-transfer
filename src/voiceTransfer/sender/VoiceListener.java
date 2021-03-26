@@ -19,22 +19,32 @@ public class VoiceListener extends Thread {
 
         this.target = (TargetDataLine) AudioSystem.getLine(info);
         this.target.open(linear);
-        this.target.start();
 
         this.stream = new AudioInputStream(target);
+    }
+
+    @Override
+    public void start() {
+        this.target.start();
         this.isListening = true;
+
+        super.start();
 
         System.out.println("VoiceListenerが起動しました。");
     }
 
+    @Override
     public void run() {
         while (true) {
-            if (!this.isListening) return;
-
+            System.out.println(this.isListening);
             try {
                 this.stream.read(this.voice, 0, this.voice.length);
             } catch (IOException e) {
                 e.printStackTrace();
+            }
+
+            if (!this.isListening) {
+                break;
             }
         }
     }
@@ -48,7 +58,7 @@ public class VoiceListener extends Thread {
         this.target.stop();
         this.target.close();
 
-        System.out.println("VoiceListenerが終了しました。");
+        System.out.println("VoiceListenerを終了しました。");
     }
 
     public boolean getIsListening() {

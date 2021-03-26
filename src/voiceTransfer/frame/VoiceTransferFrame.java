@@ -1,11 +1,12 @@
 package voiceTransfer.frame;
 
+import javax.sound.sampled.LineUnavailableException;
 import javax.swing.*;
 import java.awt.*;
 import java.net.SocketException;
 
 public class VoiceTransferFrame extends JFrame {
-    public VoiceTransferFrame() throws SocketException {
+    public VoiceTransferFrame() throws SocketException, LineUnavailableException {
         super();
 
         this.setTitle("VoiceTransfer");

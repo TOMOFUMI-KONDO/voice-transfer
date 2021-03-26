@@ -18,10 +18,10 @@ public class VoiceReceiver extends Thread {
     private final byte[] buffer;
     private final DatagramPacket packet;
     private final DatagramSocket socket;
-    private VoicePlayer player;
+    private final VoicePlayer player;
     private boolean isReceiving;
 
-    public VoiceReceiver() throws SocketException {
+    public VoiceReceiver() throws SocketException, LineUnavailableException {
         this.buffer = new byte[PACKET_SIZE];
         this.packet = new DatagramPacket(buffer, buffer.length);
         this.socket = new DatagramSocket(SERVER_PORT);
@@ -30,45 +30,35 @@ public class VoiceReceiver extends Thread {
         System.out.println("VoiceReceiverが起動しました。(port=" + SERVER_PORT + ")");
         Runtime.getRuntime().addShutdownHook(new Thread(this::end));
 
-        try {
-            this.player = new VoicePlayer();
-        } catch (LineUnavailableException e) {
-            e.printStackTrace();
-//            return;
-        }
-//        this.player.start();
+        this.player = new VoicePlayer();
     }
 
     @Override
     public void run() {
-        while (this.isReceiving) {
+        while (true) {
             try {
                 this.socket.receive(this.packet);
             } catch (IOException e) {
                 e.printStackTrace();
             }
             this.player.setVoice(this.buffer);
+
+            if (!this.isReceiving) {
+                break;
+            }
         }
     }
 
-//    @Override
-//    public void start() {
-//        super.start();
-
-    //    }
     public void startPlaying() {
         this.player.start();
     }
-
-//    public void reStart() {
-//        this.isReceiving = true;
-//    }
 
     public void stopPlaying() {
         this.player.end();
     }
 
     public void end() {
+        this.stopPlaying();
         this.isReceiving = false;
 
         System.out.println("VoiceReceiverを終了しました。");
@@ -77,8 +67,4 @@ public class VoiceReceiver extends Thread {
     public boolean getIsPlaying() {
         return this.player.getIsPlaying();
     }
-
-//    public boolean getIsReceiving() {
-//        return this.isReceiving;
-//    }
 }

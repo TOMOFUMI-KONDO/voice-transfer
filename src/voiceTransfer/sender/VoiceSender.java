@@ -5,54 +5,69 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
+import java.net.SocketException;
 
-public class VoiceSender {
-    private static final String DEFAULT_SERVER_HOST = "localhost";
-    private static final int DEFAULT_SERVER_PORT = 10007;
+public class VoiceSender extends Thread {
+    private static final String SERVER_HOST = "localhost";
+    private static final int SERVER_PORT = 10007;
     private static final int WAIT = 100;
 
-    public static void main(String[] args) {
-        final String host = args.length > 0 ? args[0] : DEFAULT_SERVER_HOST;
-        final int port = args.length > 1 ? Integer.parseInt(args[1]) : DEFAULT_SERVER_PORT;
-        final InetSocketAddress address = new InetSocketAddress(host, port);
+    private final DatagramSocket socket;
+    private final InetSocketAddress address;
+    private final VoiceListener listener;
+    private boolean isSending;
 
-        System.out.println("VoiceSenderが起動しました(host=" + host + ",port= " + port + ")");
+    public VoiceSender() throws SocketException, LineUnavailableException {
+        this.address = new InetSocketAddress(SERVER_HOST, SERVER_PORT);
+        socket = new DatagramSocket();
 
-        VoiceListener listener;
-        try {
-            listener = new VoiceListener();
-        } catch (LineUnavailableException e) {
-            e.printStackTrace();
-            return;
-        }
-        listener.start();
+        this.isSending = true;
+        System.out.println("VoiceSenderが起動しました(host=" + SERVER_HOST + ",port= " + SERVER_PORT + ")");
+        Runtime.getRuntime().addShutdownHook(new Thread(this::end));
 
-        Runtime.getRuntime().addShutdownHook(new Thread(listener::end));
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> System.out.println("VoiceSenderが終了しました。")));
+        this.listener = new VoiceListener();
+    }
 
-        try (final DatagramSocket socket = new DatagramSocket()) {
-            while (true) {
-                final byte[] voice = listener.getVoice();
-                final DatagramPacket packet = new DatagramPacket(voice, voice.length, address);
+    @Override
+    public void run() {
+        while (true) {
+            final byte[] voice = listener.getVoice();
+            final DatagramPacket packet = new DatagramPacket(voice, voice.length, address);
 
-                try {
-                    socket.send(packet);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                try {
-                    Thread.sleep(WAIT);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                if (!listener.getIsListening()) {
-                    break;
-                }
+            try {
+                socket.send(packet);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+
+            try {
+                Thread.sleep(WAIT);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            if (!this.isSending) {
+                break;
+            }
         }
+    }
+
+    public void startListening() {
+        this.listener.start();
+    }
+
+    public void stopListening() {
+        this.listener.end();
+    }
+
+    public void end() {
+        this.stopListening();
+        this.isSending = false;
+
+        System.out.println("VoiceSenderを終了しました。");
+    }
+
+    public boolean getIsListening() {
+        return this.listener.getIsListening();
     }
 }

@@ -24,13 +24,20 @@ public class VoicePlayer extends Thread {
     public void start() {
         this.source.start();
         this.isPlaying = true;
+
+        super.start();
+
         System.out.println("VoicePlayerが起動しました。");
     }
 
     @Override
     public void run() {
-        while (this.isPlaying) {
+        while (true) {
             this.source.write(this.voice, 0, this.voice.length);
+
+            if (!this.isPlaying) {
+                break;
+            }
         }
     }
 
@@ -43,7 +50,7 @@ public class VoicePlayer extends Thread {
         this.source.stop();
         this.source.close();
 
-        System.out.println("VoicePlayerが終了しました。");
+        System.out.println("VoicePlayerを終了しました。");
     }
 
     public boolean getIsPlaying() {
