@@ -17,7 +17,7 @@ public class SendButtonListener implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (this.sender.getIsListening()) {
+        if (this.sender.isListening()) {
             this.sender.stopListening();
         } else {
             this.sender.startListening();

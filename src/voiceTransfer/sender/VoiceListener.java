@@ -36,15 +36,14 @@ public class VoiceListener extends Thread {
     @Override
     public void run() {
         while (true) {
-            System.out.println(this.isListening);
+            if (!this.isListening) {
+                break;
+            }
+
             try {
                 this.stream.read(this.voice, 0, this.voice.length);
             } catch (IOException e) {
                 e.printStackTrace();
-            }
-
-            if (!this.isListening) {
-                break;
             }
         }
     }
@@ -59,9 +58,5 @@ public class VoiceListener extends Thread {
         this.target.close();
 
         System.out.println("VoiceListenerを終了しました。");
-    }
-
-    public boolean getIsListening() {
-        return this.isListening;
     }
 }

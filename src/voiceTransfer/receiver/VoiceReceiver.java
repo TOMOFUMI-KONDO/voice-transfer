@@ -18,10 +18,10 @@ public class VoiceReceiver extends Thread {
     private final byte[] buffer;
     private final DatagramPacket packet;
     private final DatagramSocket socket;
-    private final VoicePlayer player;
+    private VoicePlayer player;
     private boolean isReceiving;
 
-    public VoiceReceiver() throws SocketException, LineUnavailableException {
+    public VoiceReceiver() throws SocketException {
         this.buffer = new byte[PACKET_SIZE];
         this.packet = new DatagramPacket(buffer, buffer.length);
         this.socket = new DatagramSocket(SERVER_PORT);
@@ -29,32 +29,52 @@ public class VoiceReceiver extends Thread {
         this.isReceiving = true;
         System.out.println("VoiceReceiverが起動しました。(port=" + SERVER_PORT + ")");
         Runtime.getRuntime().addShutdownHook(new Thread(this::end));
-
-        this.player = new VoicePlayer();
     }
 
     @Override
     public void run() {
         while (true) {
+            if (!this.isReceiving) {
+                break;
+            }
+            System.out.println(this.isReceiving);
+
             try {
                 this.socket.receive(this.packet);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            this.player.setVoice(this.buffer);
 
-            if (!this.isReceiving) {
-                break;
+            if (this.player == null) {
+                continue;
             }
+
+            this.player.setVoice(this.buffer);
         }
     }
 
     public void startPlaying() {
+        try {
+            this.player = new VoicePlayer();
+        } catch (LineUnavailableException e) {
+            e.printStackTrace();
+            return;
+        }
+
         this.player.start();
     }
 
     public void stopPlaying() {
+        if (this.player == null) {
+            return;
+        }
+
         this.player.end();
+        this.player = null;
+    }
+
+    public boolean isPlaying() {
+        return this.player != null;
     }
 
     public void end() {
@@ -62,9 +82,5 @@ public class VoiceReceiver extends Thread {
         this.isReceiving = false;
 
         System.out.println("VoiceReceiverを終了しました。");
-    }
-
-    public boolean getIsPlaying() {
-        return this.player.getIsPlaying();
     }
 }

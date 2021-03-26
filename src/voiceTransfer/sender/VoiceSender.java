@@ -14,30 +14,23 @@ public class VoiceSender extends Thread {
 
     private final DatagramSocket socket;
     private final InetSocketAddress address;
-    private final VoiceListener listener;
     private boolean isSending;
+    private VoiceListener listener;
 
     public VoiceSender() throws SocketException, LineUnavailableException {
+        this.socket = new DatagramSocket();
         this.address = new InetSocketAddress(SERVER_HOST, SERVER_PORT);
-        socket = new DatagramSocket();
 
         this.isSending = true;
         System.out.println("VoiceSenderが起動しました(host=" + SERVER_HOST + ",port= " + SERVER_PORT + ")");
         Runtime.getRuntime().addShutdownHook(new Thread(this::end));
-
-        this.listener = new VoiceListener();
     }
 
     @Override
     public void run() {
         while (true) {
-            final byte[] voice = listener.getVoice();
-            final DatagramPacket packet = new DatagramPacket(voice, voice.length, address);
-
-            try {
-                socket.send(packet);
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (!this.isSending) {
+                break;
             }
 
             try {
@@ -46,18 +39,43 @@ public class VoiceSender extends Thread {
                 e.printStackTrace();
             }
 
-            if (!this.isSending) {
-                break;
+            if (this.listener == null) {
+                continue;
+            }
+
+            final byte[] voice = this.listener.getVoice();
+            final DatagramPacket packet = new DatagramPacket(voice, voice.length, this.address);
+
+            try {
+                this.socket.send(packet);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
 
     public void startListening() {
+        try {
+            this.listener = new VoiceListener();
+        } catch (LineUnavailableException e) {
+            e.printStackTrace();
+            return;
+        }
+
         this.listener.start();
     }
 
     public void stopListening() {
+        if (this.listener == null) {
+            return;
+        }
+
         this.listener.end();
+        this.listener = null;
+    }
+
+    public boolean isListening() {
+        return this.listener != null;
     }
 
     public void end() {
@@ -65,9 +83,5 @@ public class VoiceSender extends Thread {
         this.isSending = false;
 
         System.out.println("VoiceSenderを終了しました。");
-    }
-
-    public boolean getIsListening() {
-        return this.listener.getIsListening();
     }
 }

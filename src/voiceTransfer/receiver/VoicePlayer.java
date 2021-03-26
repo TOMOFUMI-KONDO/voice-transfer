@@ -52,8 +52,4 @@ public class VoicePlayer extends Thread {
 
         System.out.println("VoicePlayerを終了しました。");
     }
-
-    public boolean getIsPlaying() {
-        return this.isPlaying;
-    }
 }
