@@ -37,7 +37,6 @@ public class VoiceReceiver extends Thread {
             if (!this.isReceiving) {
                 break;
             }
-            System.out.println(this.isReceiving);
 
             try {
                 this.socket.receive(this.packet);

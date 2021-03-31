@@ -1,6 +1,6 @@
 package voiceTransfer;
 
-import voiceTransfer.frame.VoiceTransferFrame;
+import voiceTransfer.view.VoiceTransferFrame;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.swing.*;

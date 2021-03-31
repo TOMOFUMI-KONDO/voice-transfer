@@ -1,4 +1,7 @@
-package voiceTransfer.frame;
+package voiceTransfer.view;
+
+import voiceTransfer.view.listener.ReceiveButtonListener;
+import voiceTransfer.view.listener.SendButtonListener;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.swing.*;

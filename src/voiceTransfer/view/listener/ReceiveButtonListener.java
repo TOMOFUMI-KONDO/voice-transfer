@@ -1,4 +1,4 @@
-package voiceTransfer.frame;
+package voiceTransfer.view.listener;
 
 import voiceTransfer.receiver.VoiceReceiver;
 
