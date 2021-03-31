@@ -1,0 +1,108 @@
+@startuml
+
+class VoiceReceiverSet {
+    - VoiceReceiver[] receivers
+
+    + VoiceReceiver[] listReceivers()
+    + VoiceReceiver addReceiver()
+    + void deleteReceiver()
+}
+
+class VoiceReceiverCreator {
+    + VoiceReceiver createReceiver()
+}
+
+class VoiceReceiver {
+    - {static} int PACKET_SIZE
+
+    - VoicePlayer player
+    - int serverPort
+    - DatagramSocket socket
+    - DatagramPacket packet
+    - byte[] buffer
+    - boolean isReceiving
+
+    + VoiceReceiver()
+    + void run()
+    + void end()
+}
+
+class VoicePlayer{
+    - {static} int HZ
+    - {static} int BITS
+    - {static} int MONO
+
+    - SourceDataLine source
+    - byte[] voice
+    - boolean isPlaying
+
+    + VoicePlayer()
+    + void run()
+    + void setVoice(byte[])
+    + void end()
+}
+
+class VoiceSenderSet {
+    - VoiceSender[] senders
+
+    + VoiceSender[] listSenders()
+    + VoiceSender addSender()
+    + void deleteSender()
+}
+
+class VoiceSenderCreator {
+    + VoiceSender createSender()
+}
+
+class VoiceSender {
+    - {static} int SERVER_HOST
+    - {static} int SERVER_PORT
+    - {static} int INTERVAL
+
+    - VoiceListener listener
+    - InetSocketAddress address
+    - DatagramSocket socket
+    - boolean isSending
+
+    + VoiceSender()
+    + void run()
+    + void end()
+}
+
+class VoiceListener {
+    - {static} int HZ
+    - {static} int BITS
+    - {static} int MONO
+
+    - TargetDataLine target
+    - AudioInputStream stream
+    - byte[] voice
+    - boolean isListening
+
+    + VoiceListener()
+    + void run()
+    + byte[] getVoice()
+    + void end()
+}
+
+class Thread {
+     + void start()
+     + void run()
+}
+
+
+VoiceReceiverSet *-- VoiceReceiverCreator
+VoiceReceiverSet o-- VoiceReceiver
+VoiceReceiverCreator o-- VoiceReceiver
+VoiceReceiver --|> Thread
+VoiceReceiver *-- VoicePlayer
+VoicePlayer --|> Thread
+
+VoiceSenderSet *-- VoiceSenderCreator
+VoiceSenderSet o-- VoiceSender
+VoiceSenderCreator o-- VoiceSender
+VoiceSender --|> Thread
+VoiceSender *-- VoiceListener
+VoiceListener --|> Thread
+
+@enduml
