@@ -1,0 +1,82 @@
+@startuml
+
+skinparam boxPadding 20
+
+box "受信側" #LightGreen
+participant VoicePlayer
+participant VoiceReceiver
+participant VoiceReceiverCreator
+participant VoiceReceiverSet
+end box
+
+box "送信側" #LightBlue
+participant VoiceSenderSet
+participant VoiceSenderCreator
+participant VoiceSender
+participant VoiceListener
+end box
+
+' 初期化
+activate VoiceReceiverSet
+activate VoiceReceiverCreator
+activate VoiceSenderSet
+activate VoiceSenderCreator
+VoiceReceiverSet -> VoiceReceiverSet: 管理対象のVoiceReceiverを格納する\nフィールドを空配列で初期化
+VoiceSenderSet -> VoiceSenderSet: 管理対象のVoiceListenerを格納する\nフィールドを空配列で初期化
+
+loop
+    ' 受信準備
+    VoiceReceiverSet -> VoiceReceiverCreator: VoiceReceiverの作成を要求
+    VoiceReceiverCreator -> VoiceReceiver: VoiceReceiverを作成\n(待ち受けポート番号の指定、UDPソケットの作成)
+    activate VoiceReceiver
+    VoiceReceiver -> VoiceReceiver: 音声データ受信のスレッド処理を開始
+    VoiceReceiverSet <-- VoiceReceiverCreator: 作成したVoiceReceiverを返す
+    VoiceReceiverSet -> VoiceReceiverSet: 作成されたVoiceReceiverを管理対象に追加
+    VoiceReceiver -> VoicePlayer: VoicePlayerを作成
+    activate VoicePlayer
+    VoicePlayer -> VoicePlayer: 音声再生のスレッド処理を開始
+
+    ' 送信準備
+    VoiceSenderSet -> VoiceSenderCreator: VoiceSenderの作成を要求
+    VoiceSenderCreator -> VoiceSender: VoiceSenderを作成\n(送信先ホスト・ポート番号の指定、UDPソケットの作成)
+    activate VoiceSender
+    VoiceSender -> VoiceSender: 音声送信のスレッド処理を開始
+    VoiceSenderSet <-- VoiceSenderCreator: 作成したVoiceSenderを返す
+    VoiceSenderSet -> VoiceSenderSet: 作成されたVoiceSenderを管理対象に追加
+    VoiceSender -> VoiceListener: VoiceListenerを作成
+    activate VoiceListener
+    VoiceListener -> VoiceListener: 音声入力のスレッド処理を開始
+
+    ' 送受信処理
+    loop
+        loop
+            VoiceListener -> VoiceListener: 音声をマイクから取得し、バッファに保存
+        end
+        VoiceSender -> VoiceListener: 音声データを要求
+        VoiceSender <-- VoiceListener: 音声データを渡す
+        VoiceSender -> VoiceReceiver: 音声データを送信
+
+        VoiceReceiver -> VoicePlayer: 受信した音声データを渡す
+        VoicePlayer -> VoicePlayer: 受信した音声をスピーカーから再生
+    end
+
+    ' 送信終了処理
+    VoiceSenderSet -> VoiceSender: 停止命令
+    VoiceSender -> VoiceListener: スレッド処理の停止を命令
+    VoiceSender -> VoiceListener: インスタンスの削除
+    destroy VoiceListener
+    VoiceSender -> VoiceSender: スレッド処理を停止
+    destroy VoiceSender
+    VoiceSenderSet -> VoiceSenderSet: 停止したVoiceSenderを管理対象から除外
+
+    ' 受信終了処理
+    VoiceReceiverSet -> VoiceReceiver: 停止命令
+    VoiceReceiver -> VoicePlayer: スレッド処理の停止を命令
+    VoiceReceiver -> VoicePlayer: インスタンスの削除
+    destroy VoicePlayer
+    VoiceReceiver -> VoiceReceiver: スレッド処理を停止
+    destroy VoiceReceiver
+    VoiceReceiverSet -> VoiceReceiverSet: 停止したVoiceReceiverを管理対象から除外
+end
+
+@enduml
