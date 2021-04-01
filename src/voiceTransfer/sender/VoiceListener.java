@@ -10,23 +10,21 @@ public class VoiceListener extends Thread {
 
     private final TargetDataLine target;
     private final AudioInputStream stream;
-    private boolean isListening;
     private final byte[] voice = new byte[HZ * BITS / 8 * MONO];
 
     public VoiceListener() throws LineUnavailableException {
         AudioFormat linear = new AudioFormat(HZ, BITS, MONO, true, false);
         DataLine.Info info = new DataLine.Info(TargetDataLine.class, linear);
-
         this.target = (TargetDataLine) AudioSystem.getLine(info);
         this.target.open(linear);
-
         this.stream = new AudioInputStream(target);
+
+        this.start();
     }
 
     @Override
     public void start() {
         this.target.start();
-        this.isListening = true;
 
         super.start();
 
@@ -36,7 +34,7 @@ public class VoiceListener extends Thread {
     @Override
     public void run() {
         while (true) {
-            if (!this.isListening) {
+            if (!this.target.isOpen()) {
                 break;
             }
 
@@ -52,11 +50,11 @@ public class VoiceListener extends Thread {
         return this.voice;
     }
 
-    public void end() {
-        this.isListening = false;
+    public void end() throws IOException {
         this.target.stop();
         this.target.close();
+        this.stream.close();
 
-        System.out.println("VoiceListenerを終了しました。");
+        System.out.println("VoiceListenerが停止しました。");
     }
 }
