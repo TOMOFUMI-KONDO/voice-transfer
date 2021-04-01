@@ -1,7 +1,7 @@
 package voiceTransfer.view;
 
-import voiceTransfer.view.listener.ReceiveButtonListener;
-import voiceTransfer.view.listener.SendButtonListener;
+import voiceTransfer.view.button.SendButtonListener;
+import voiceTransfer.view.button.receiveButton.ReceiveButton;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.swing.*;
@@ -17,9 +17,6 @@ public class VoiceTransferPanel extends JPanel {
         sendButton.addActionListener(new SendButtonListener());
         this.add(sendButton);
 
-        JButton receiveButton = new JButton("Receive");
-        receiveButton.setPreferredSize(new Dimension(150, 60));
-        receiveButton.addActionListener(new ReceiveButtonListener());
-        this.add(receiveButton);
+        this.add(new ReceiveButton("Receive", new Dimension(150, 60)));
     }
 }
