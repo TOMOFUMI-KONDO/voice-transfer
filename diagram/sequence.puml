@@ -31,23 +31,23 @@ loop
     受信側のControl -> VoiceReceiverCreator: VoiceReceiverの作成を要求
     VoiceReceiverCreator -> VoiceReceiver: VoiceReceiverを作成\n - 待ち受けポート番号の指定\n - UDPソケットの作成
     activate VoiceReceiver
-    VoiceReceiver -> VoiceReceiver: 音声データ受信の\nスレッド処理を開始
     受信側のControl <-- VoiceReceiverCreator: 作成したVoiceReceiverを返す
     受信側のControl -> VoiceReceiverSet: 作成されたVoiceReceiverを管理対象に追加
     VoiceReceiver -> VoicePlayer: VoicePlayerを作成
     activate VoicePlayer
     VoicePlayer -> VoicePlayer: 音声再生のスレッド処理を開始
+    VoiceReceiver -> VoiceReceiver: 音声データ受信の\nスレッド処理を開始
 
     ' 送信準備
     送信側のControl -> VoiceSenderCreator: VoiceSenderの作成を要求
     VoiceSenderCreator -> VoiceSender: VoiceSenderを作成\n - 送信先ホスト・ポート番号の指定 \n - UDPソケットの作成
     activate VoiceSender
-    VoiceSender -> VoiceSender: 音声送信のスレッド処理を開始
     送信側のControl <-- VoiceSenderCreator: 作成したVoiceSenderを返す
     送信側のControl -> VoiceSenderSet: 作成されたVoiceSenderを管理対象に追加
     VoiceSender -> VoiceListener: VoiceListenerを作成
     activate VoiceListener
     VoiceListener -> VoiceListener: 音声入力のスレッド処理を開始
+    VoiceSender -> VoiceSender: 音声送信のスレッド処理を開始
 
     ' 送受信処理
     loop

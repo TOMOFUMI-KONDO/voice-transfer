@@ -20,10 +20,9 @@ public class VoiceReceiver extends Thread {
         this.buffer = new byte[PACKET_SIZE];
         this.packet = new DatagramPacket(buffer, buffer.length);
         this.socket = new DatagramSocket(serverPort);
+        this.player = new VoicePlayer();
 
         this.start();
-
-        this.player = new VoicePlayer();
 
         Runtime.getRuntime().addShutdownHook(new Thread(this::end));
     }

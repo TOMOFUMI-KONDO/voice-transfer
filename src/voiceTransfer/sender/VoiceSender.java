@@ -21,10 +21,9 @@ public class VoiceSender extends Thread {
         this.serverPort = serverPort;
         this.address = new InetSocketAddress(serverHost, serverPort);
         this.socket = new DatagramSocket();
+        this.listener = new VoiceListener();
 
         this.start();
-
-        this.listener = new VoiceListener();
 
         Runtime.getRuntime().addShutdownHook(new Thread(this::end));
     }
