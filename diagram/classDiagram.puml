@@ -9,7 +9,7 @@ class VoiceReceiverSet {
 }
 
 class VoiceReceiverCreator {
-    + VoiceReceiver createReceiver()
+    + VoiceReceiver createReceiver(int serverPort)
 }
 
 class VoiceReceiver {
@@ -21,7 +21,7 @@ class VoiceReceiver {
     - DatagramSocket socket
     - DatagramPacket packet
 
-    + VoiceReceiver()
+    + VoiceReceiver(int serverPort)
     + void start()
     + void run()
     + void end()
@@ -51,19 +51,19 @@ class VoiceSenderSet {
 }
 
 class VoiceSenderCreator {
-    + VoiceSender createSender()
+    + VoiceSender createSender(String serverHost, int serverPort)
 }
 
 class VoiceSender {
-    - {static} int SERVER_HOST
-    - {static} int SERVER_PORT
     - {static} int INTERVAL
 
     - VoiceListener listener
+    - int serverHost
+    - int serverPort
     - InetSocketAddress address
     - DatagramSocket socket
 
-    + VoiceSender()
+    + VoiceSender(String serverHost, int serverPort)
     + void start()
     + void run()
     + void end()
