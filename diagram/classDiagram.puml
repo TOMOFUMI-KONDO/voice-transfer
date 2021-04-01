@@ -5,7 +5,7 @@ class VoiceReceiverSet {
 
     + Set<VoiceReceiver> getReceivers()
     + void addReceiver(VoiceReceiver)
-    + void removeReceiver()
+    + void removeReceiver(VoiceReceiver)
 }
 
 class VoiceReceiverCreator {
@@ -47,7 +47,7 @@ class VoiceSenderSet {
 
     + Set<VoiceSender> getSenders()
     + void addSender(VoiceSender)
-    + void removeSender()
+    + void removeSender(VoiceSender)
 }
 
 class VoiceSenderCreator {
