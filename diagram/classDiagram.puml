@@ -17,12 +17,12 @@ class VoiceReceiver {
 
     - VoicePlayer player
     - int serverPort
+    - byte[] buffer
     - DatagramSocket socket
     - DatagramPacket packet
-    - byte[] buffer
-    - boolean isReceiving
 
     + VoiceReceiver()
+    + void start()
     + void run()
     + void end()
 }
@@ -34,9 +34,9 @@ class VoicePlayer{
 
     - SourceDataLine source
     - byte[] voice
-    - boolean isPlaying
 
     + VoicePlayer()
+    + void start()
     + void run()
     + void setVoice(byte[])
     + void end()
@@ -62,9 +62,9 @@ class VoiceSender {
     - VoiceListener listener
     - InetSocketAddress address
     - DatagramSocket socket
-    - boolean isSending
 
     + VoiceSender()
+    + void start()
     + void run()
     + void end()
 }
@@ -77,9 +77,9 @@ class VoiceListener {
     - TargetDataLine target
     - AudioInputStream stream
     - byte[] voice
-    - boolean isListening
 
     + VoiceListener()
+    + void start()
     + void run()
     + byte[] getVoice()
     + void end()
