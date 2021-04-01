@@ -1,11 +1,11 @@
 @startuml
 
 class VoiceReceiverSet {
-    - VoiceReceiver[] receivers
+    - Set<VoiceReceiver> receivers
 
-    + VoiceReceiver[] listReceivers()
-    + VoiceReceiver addReceiver()
-    + void deleteReceiver()
+    + Set<VoiceReceiver> getReceivers()
+    + void addReceiver(VoiceReceiver)
+    + void removeReceiver()
 }
 
 class VoiceReceiverCreator {
@@ -43,11 +43,11 @@ class VoicePlayer{
 }
 
 class VoiceSenderSet {
-    - VoiceSender[] senders
+    - Set<VoiceSender> senders
 
-    + VoiceSender[] listSenders()
-    + VoiceSender addSender()
-    + void deleteSender()
+    + Set<VoiceSender> getSenders()
+    + void addSender(VoiceSender)
+    + void removeSender()
 }
 
 class VoiceSenderCreator {
@@ -91,16 +91,14 @@ class Thread {
 }
 
 
-VoiceReceiverSet *-- VoiceReceiverCreator
 VoiceReceiverSet o-- VoiceReceiver
-VoiceReceiverCreator o-- VoiceReceiver
+VoiceReceiverCreator --> VoiceReceiver
 VoiceReceiver --|> Thread
 VoiceReceiver *-- VoicePlayer
 VoicePlayer --|> Thread
 
-VoiceSenderSet *-- VoiceSenderCreator
 VoiceSenderSet o-- VoiceSender
-VoiceSenderCreator o-- VoiceSender
+VoiceSenderCreator --> VoiceSender
 VoiceSender --|> Thread
 VoiceSender *-- VoiceListener
 VoiceListener --|> Thread
