@@ -4,8 +4,6 @@ skinparam boxPadding 20
 
 box "受信側" #LightGreen
 control 受信側のControl
-participant VoiceReceiverCreator
-participant VoiceReceiverSet
 participant VoicePlayer
 participant VoiceReceiver
 end box
@@ -14,73 +12,61 @@ box "送信側" #LightBlue
 participant VoiceSender
 participant VoiceListener
 participant VoiceSenderSet
-participant VoiceSenderCreator
 control 送信側のControl
 end box
 
 ' 初期化
 activate 受信側のControl
-activate VoiceReceiverSet
-activate VoiceReceiverCreator
 activate 送信側のControl
 activate VoiceSenderSet
-activate VoiceSenderCreator
 
-loop
-    ' 受信準備
-    受信側のControl -> VoiceReceiverCreator: VoiceReceiverの作成を要求
-    VoiceReceiverCreator -> VoiceReceiver: VoiceReceiverを作成\n - 待ち受けポート番号の指定\n - UDPソケットの作成
-    activate VoiceReceiver
-    受信側のControl <-- VoiceReceiverCreator: 作成したVoiceReceiverを返す
-    受信側のControl -> VoiceReceiverSet: 作成されたVoiceReceiverを管理対象に追加
-    VoiceReceiver -> VoicePlayer: VoicePlayerを作成
-    activate VoicePlayer
-    VoicePlayer -> VoicePlayer: 音声再生のスレッド処理を開始
-    VoiceReceiver -> VoiceReceiver: 音声データ受信の\nスレッド処理を開始
+' 受信準備
+受信側のControl -> VoiceReceiver: VoiceReceiverを作成\n (- 待ち受けポート番号の指定)\n - UDPソケットの作成
+activate VoiceReceiver
+VoiceReceiver -> VoicePlayer: VoicePlayerを作成
+activate VoicePlayer
+VoicePlayer -> VoicePlayer: 音声再生のスレッド処理を開始
+VoiceReceiver -> VoiceReceiver: 音声データ受信の\nスレッド処理を開始
 
+loop 一度に複数の相手に送信可能
     ' 送信準備
-    送信側のControl -> VoiceSenderCreator: VoiceSenderの作成を要求
-    VoiceSenderCreator -> VoiceSender: VoiceSenderを作成\n - 送信先ホスト・ポート番号の指定 \n - UDPソケットの作成
+    送信側のControl -> VoiceSenderSet: VoiceSenderの作成を要求
+    VoiceSenderSet -> VoiceSender: VoiceSenderを作成\n - 送信先ホスト(・ポート番号)の指定 \n - UDPソケットの作成
     activate VoiceSender
-    送信側のControl <-- VoiceSenderCreator: 作成したVoiceSenderを返す
-    送信側のControl -> VoiceSenderSet: 作成されたVoiceSenderを管理対象に追加
     VoiceSender -> VoiceListener: VoiceListenerを作成
     activate VoiceListener
     VoiceListener -> VoiceListener: 音声入力のスレッド処理を開始
     VoiceSender -> VoiceSender: 音声送信のスレッド処理を開始
 
     ' 送受信処理
-    loop
-        loop
-            VoiceListener -> VoiceListener: 音声をマイクから取得し、バッファに保存
+    loop 一定時間ごとに音声を送信
+        loop 音声の取得
+            VoiceListener -> VoiceListener: 音声をマイクから取得し、\nバッファに保存
         end
+
         VoiceSender -> VoiceListener: 音声データを要求
         VoiceSender <-- VoiceListener: 音声データを渡す
         VoiceSender -> VoiceReceiver: 音声データを送信
 
         VoiceReceiver -> VoicePlayer: 受信した音声データを渡す
-        VoicePlayer -> VoicePlayer: 受信した音声をスピーカーから再生
+        VoicePlayer -> VoicePlayer: 受信した音声を\nスピーカーから再生
     end
 
     ' 送信終了処理
     送信側のControl -> VoiceSenderSet: VoiceSenderの削除を要求
     VoiceSenderSet -> VoiceSender: 停止命令
     VoiceSender -> VoiceListener: スレッド処理の停止を命令
-    VoiceSender -> VoiceListener: VoiceListenerを削除
     destroy VoiceListener
     VoiceSender -> VoiceSender: スレッド処理を停止
     destroy VoiceSender
-    VoiceSenderSet -> VoiceSenderSet: 停止したVoiceSenderを管理対象から除外
-
-    ' 受信終了処理
-    受信側のControl -> VoiceReceiverSet: VoiceReceiverの削除を要求
-    VoiceReceiverSet -> VoiceReceiver: 停止命令
-    VoiceReceiver -> VoicePlayer: スレッド処理の停止を命令
-    VoiceReceiver -> VoicePlayer: VoicePlayerを削除
-    destroy VoicePlayer
-    VoiceReceiver -> VoiceReceiver: スレッド処理を停止
-    destroy VoiceReceiver
-    VoiceReceiverSet -> VoiceReceiverSet: 停止したVoiceReceiverを管理対象から除外
+    VoiceSenderSet -> VoiceSenderSet: 停止したVoiceSenderを\n管理対象から除外
 end
+
+' 受信終了処理
+受信側のControl -> VoiceReceiver: 停止命令
+VoiceReceiver -> VoicePlayer: スレッド処理の停止を命令
+destroy VoicePlayer
+VoiceReceiver -> VoiceReceiver: スレッド処理を停止
+destroy VoiceReceiver
 
 @enduml

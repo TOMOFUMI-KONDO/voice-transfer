@@ -1,6 +1,7 @@
 @startuml
 
 class VoiceReceiver {
+    - {static} int SERVER_PORT
     - {static} int PACKET_SIZE
 
     - VoicePlayer player
@@ -9,7 +10,7 @@ class VoiceReceiver {
     - DatagramSocket socket
     - DatagramPacket packet
 
-    + VoiceReceiver(int serverPort)
+    + VoiceReceiver()
     + void start()
     + void run()
     + void end()
@@ -34,15 +35,12 @@ class VoiceSenderSet {
     - Set<VoiceSender> senders
 
     + Set<VoiceSender> getSenders()
-    + void addSender(VoiceSender)
-    + void removeSender(VoiceSender)
-}
-
-class VoiceSenderCreator {
-    + VoiceSender createSender(String serverHost, int serverPort)
+    + void addSender(String serverHost)
+    + void removeSender(String serverHost)
 }
 
 class VoiceSender {
+    - {static} int SERVER_PORT
     - {static} int INTERVAL
 
     - VoiceListener listener
@@ -51,7 +49,7 @@ class VoiceSender {
     - InetSocketAddress address
     - DatagramSocket socket
 
-    + VoiceSender(String serverHost, int serverPort)
+    + VoiceSender(String serverHost)
     + void start()
     + void run()
     + void end()
@@ -74,8 +72,10 @@ class VoiceListener {
 }
 
 class Thread {
+     ...
      + void start()
      + void run()
+     {method} ...
 }
 
 
@@ -84,7 +84,6 @@ VoiceReceiver *-- VoicePlayer
 VoicePlayer --|> Thread
 
 VoiceSenderSet o-- VoiceSender
-VoiceSenderCreator --> VoiceSender
 VoiceSender --|> Thread
 VoiceSender *-- VoiceListener
 VoiceListener --|> Thread
