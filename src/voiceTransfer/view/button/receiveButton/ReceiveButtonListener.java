@@ -1,8 +1,7 @@
 package voiceTransfer.view.button.receiveButton;
 
+import util.PrintUtil;
 import voiceTransfer.receiver.VoiceReceiver;
-import voiceTransfer.receiver.VoiceReceiverCreator;
-import voiceTransfer.receiver.VoiceReceiverSet;
 
 import javax.sound.sampled.LineUnavailableException;
 import java.awt.event.ActionEvent;
@@ -10,34 +9,19 @@ import java.awt.event.ActionListener;
 import java.net.SocketException;
 
 public class ReceiveButtonListener implements ActionListener {
-    private final VoiceReceiverSet receiverSet;
-    private final VoiceReceiverCreator receiverCreator;
-
-    public ReceiveButtonListener() {
-        this.receiverSet = new VoiceReceiverSet();
-        this.receiverCreator = new VoiceReceiverCreator();
-    }
-
+    private VoiceReceiver receiver;
 
     @Override
     public void actionPerformed(ActionEvent event) {
-        // FIXME: 仮の実装↓
-        if (this.receiverSet.getReceivers().isEmpty()) {
-            VoiceReceiver newReceiver;
-
+        if (this.receiver == null) {
             try {
-                newReceiver = this.receiverCreator.createReceiver();
+                this.receiver = new VoiceReceiver();
             } catch (SocketException | LineUnavailableException e) {
-                e.printStackTrace();
-                return;
+                PrintUtil.printException(e);
             }
-
-            this.receiverSet.addReceiver(newReceiver);
         } else {
-            for (VoiceReceiver receiver : this.receiverSet.getReceivers()) {
-                receiver.end();
-                this.receiverSet.removeReceiver(receiver);
-            }
+            this.receiver.end();
+            this.receiver = null;
         }
     }
 }

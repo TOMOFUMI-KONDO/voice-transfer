@@ -1,5 +1,6 @@
 package voiceTransfer;
 
+import util.PrintUtil;
 import voiceTransfer.view.VoiceTransferFrame;
 
 import javax.sound.sampled.LineUnavailableException;
@@ -12,7 +13,7 @@ public class Main {
         try {
             frame = new VoiceTransferFrame();
         } catch (SocketException | LineUnavailableException e) {
-            e.printStackTrace();
+            PrintUtil.printException(e);
             return;
         }
 

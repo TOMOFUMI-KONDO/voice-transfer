@@ -1,5 +1,7 @@
 package voiceTransfer.sender;
 
+import util.PrintUtil;
+
 import javax.sound.sampled.LineUnavailableException;
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -8,18 +10,17 @@ import java.net.InetSocketAddress;
 import java.net.SocketException;
 
 public class VoiceSender extends Thread {
-    private static final int WAIT = 100;
+    private static final int SERVER_PORT = 10007;
+    private static final int INTERVAL = 100;
 
     private final VoiceListener listener;
     private final String serverHost;
-    private final int serverPort;
     private final DatagramSocket socket;
     private final InetSocketAddress address;
 
-    public VoiceSender(String serverHost, int serverPort) throws SocketException, LineUnavailableException {
+    public VoiceSender(String serverHost) throws SocketException, LineUnavailableException {
         this.serverHost = serverHost;
-        this.serverPort = serverPort;
-        this.address = new InetSocketAddress(serverHost, serverPort);
+        this.address = new InetSocketAddress(serverHost, SERVER_PORT);
         this.socket = new DatagramSocket();
         this.listener = new VoiceListener();
 
@@ -31,7 +32,7 @@ public class VoiceSender extends Thread {
     @Override
     public void start() {
         super.start();
-        System.out.println("VoiceSenderが起動しました(host=" + this.serverHost + ",port= " + this.serverPort + ")");
+        System.out.println("VoiceSenderが起動しました(host=" + this.serverHost + ",port=" + SERVER_PORT + ")");
     }
 
     @Override
@@ -42,9 +43,9 @@ public class VoiceSender extends Thread {
             }
 
             try {
-                Thread.sleep(WAIT);
+                Thread.sleep(INTERVAL);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                PrintUtil.printException(e);
             }
 
             byte[] voice = this.listener.getVoice();
@@ -56,7 +57,7 @@ public class VoiceSender extends Thread {
                 // ソケットが強制的にcloseされるのは正常な挙動
                 System.out.println(e.getMessage());
             } catch (IOException e) {
-                e.printStackTrace();
+                PrintUtil.printException(e);
             }
         }
     }
@@ -65,10 +66,10 @@ public class VoiceSender extends Thread {
         try {
             this.listener.end();
         } catch (IOException e) {
-            e.printStackTrace();
+            PrintUtil.printException(e);
         }
         this.socket.close();
 
-        System.out.println("VoiceSenderが停止しました。(host=" + this.serverHost + ", port=" + this.serverPort + ")");
+        System.out.println("VoiceSenderが停止しました。(host=" + this.serverHost + ", port=" + SERVER_PORT + ")");
     }
 }

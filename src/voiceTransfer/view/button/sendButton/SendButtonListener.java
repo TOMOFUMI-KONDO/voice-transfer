@@ -1,7 +1,7 @@
 package voiceTransfer.view.button.sendButton;
 
+import util.PrintUtil;
 import voiceTransfer.sender.VoiceSender;
-import voiceTransfer.sender.VoiceSenderCreator;
 import voiceTransfer.sender.VoiceSenderSet;
 
 import javax.sound.sampled.LineUnavailableException;
@@ -11,11 +11,9 @@ import java.net.SocketException;
 
 public class SendButtonListener implements ActionListener {
     private final VoiceSenderSet senderSet;
-    private final VoiceSenderCreator senderCreator;
 
     public SendButtonListener() {
         this.senderSet = new VoiceSenderSet();
-        this.senderCreator = new VoiceSenderCreator();
     }
 
     @Override
@@ -25,9 +23,9 @@ public class SendButtonListener implements ActionListener {
             VoiceSender newSender;
 
             try {
-                newSender = this.senderCreator.createSender();
+                newSender = new VoiceSender("localhost");
             } catch (SocketException | LineUnavailableException e) {
-                e.printStackTrace();
+                PrintUtil.printException(e);
                 return;
             }
 

@@ -1,5 +1,7 @@
 package voiceTransfer.sender;
 
+import util.PrintUtil;
+
 import javax.sound.sampled.*;
 import java.io.IOException;
 
@@ -41,7 +43,7 @@ public class VoiceListener extends Thread {
             try {
                 this.stream.read(this.voice, 0, this.voice.length);
             } catch (IOException e) {
-                e.printStackTrace();
+                PrintUtil.printException(e);
             }
         }
     }
