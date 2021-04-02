@@ -1,17 +1,5 @@
 @startuml
 
-class VoiceReceiverSet {
-    - Set<VoiceReceiver> receivers
-
-    + Set<VoiceReceiver> getReceivers()
-    + void addReceiver(VoiceReceiver)
-    + void removeReceiver(VoiceReceiver)
-}
-
-class VoiceReceiverCreator {
-    + VoiceReceiver createReceiver(int serverPort)
-}
-
 class VoiceReceiver {
     - {static} int PACKET_SIZE
 
@@ -91,8 +79,6 @@ class Thread {
 }
 
 
-VoiceReceiverSet o-- VoiceReceiver
-VoiceReceiverCreator --> VoiceReceiver
 VoiceReceiver --|> Thread
 VoiceReceiver *-- VoicePlayer
 VoicePlayer --|> Thread
