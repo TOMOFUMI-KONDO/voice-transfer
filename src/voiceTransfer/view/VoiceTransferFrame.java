@@ -1,5 +1,8 @@
 package voiceTransfer.view;
 
+import voiceTransfer.view.Panel.PlayPanel;
+import voiceTransfer.view.Panel.SendPanel;
+
 import javax.sound.sampled.LineUnavailableException;
 import javax.swing.*;
 import java.awt.*;
@@ -10,10 +13,10 @@ public class VoiceTransferFrame extends JFrame {
         super();
 
         this.setTitle("VoiceTransfer");
-        this.setBounds(100, 100, 600, 400);
+        this.setBounds(0, 0, 1000, 300);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        JPanel panel = new VoiceTransferPanel();
-        this.getContentPane().add(panel, BorderLayout.SOUTH);
+        this.getContentPane().add(new SendPanel(), BorderLayout.NORTH);
+        this.getContentPane().add(new PlayPanel(), BorderLayout.SOUTH);
     }
 }

@@ -1,40 +1,38 @@
 package voiceTransfer.view.button.sendButton;
 
 import util.PrintUtil;
-import voiceTransfer.sender.VoiceSender;
 import voiceTransfer.sender.VoiceSenderSet;
 
 import javax.sound.sampled.LineUnavailableException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.SocketException;
+import java.util.function.Consumer;
 
 public class SendButtonListener implements ActionListener {
+    private final Consumer<String> setText;
     private final VoiceSenderSet senderSet;
+    private Integer senderId;
 
-    public SendButtonListener() {
-        this.senderSet = new VoiceSenderSet();
+    public SendButtonListener(Consumer<String> setText, VoiceSenderSet senderSet) {
+        this.setText = setText;
+        this.senderSet = senderSet;
     }
 
     @Override
     public void actionPerformed(ActionEvent event) {
         // FIXME: 仮の実装↓
-        if (this.senderSet.getSenders().isEmpty()) {
-            VoiceSender newSender;
-
+        if (!this.senderSet.getSenderIds().contains(this.senderId)) {
             try {
-                newSender = new VoiceSender("localhost");
+                this.senderId = this.senderSet.createSender("localhost");
             } catch (SocketException | LineUnavailableException e) {
                 PrintUtil.printException(e);
                 return;
             }
-
-            this.senderSet.addSender(newSender);
+            this.setText.accept("Tap to stop Sending");
         } else {
-            for (VoiceSender sender : this.senderSet.getSenders()) {
-                sender.end();
-                this.senderSet.removeSender(sender);
-            }
+            System.out.println(this.senderSet.removeSender(this.senderId));
+            this.setText.accept("Tap to send");
         }
     }
 }

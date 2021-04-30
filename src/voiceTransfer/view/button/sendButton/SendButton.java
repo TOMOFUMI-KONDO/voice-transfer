@@ -1,12 +1,15 @@
 package voiceTransfer.view.button.sendButton;
 
+
+import voiceTransfer.sender.VoiceSenderSet;
+
 import javax.swing.*;
 import java.awt.*;
 
 public class SendButton extends JButton {
-    public SendButton(String text, Dimension dimension) {
-        this.setText(text);
+    public SendButton(Dimension dimension, VoiceSenderSet senderSet) {
         this.setPreferredSize(dimension);
-        this.addActionListener(new SendButtonListener());
+        this.setText("Tap to send");
+        this.addActionListener(new SendButtonListener(this::setText, senderSet));
     }
 }
