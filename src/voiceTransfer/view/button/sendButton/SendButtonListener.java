@@ -8,13 +8,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.SocketException;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class SendButtonListener implements ActionListener {
+    private final Supplier<String> getHostName;
     private final Consumer<String> setText;
     private final VoiceSenderSet senderSet;
     private Integer senderId;
 
-    public SendButtonListener(Consumer<String> setText, VoiceSenderSet senderSet) {
+    public SendButtonListener(Supplier<String> getHostName, Consumer<String> setText, VoiceSenderSet senderSet) {
+        this.getHostName = getHostName;
         this.setText = setText;
         this.senderSet = senderSet;
     }
@@ -24,7 +27,7 @@ public class SendButtonListener implements ActionListener {
         // FIXME: 仮の実装↓
         if (!this.senderSet.getSenderIds().contains(this.senderId)) {
             try {
-                this.senderId = this.senderSet.createSender("localhost");
+                this.senderId = this.senderSet.createSender(this.getHostName.get());
             } catch (SocketException | LineUnavailableException e) {
                 PrintUtil.printException(e);
                 return;

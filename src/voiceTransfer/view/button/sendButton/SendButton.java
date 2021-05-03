@@ -5,11 +5,12 @@ import voiceTransfer.sender.VoiceSenderSet;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.function.Supplier;
 
 public class SendButton extends JButton {
-    public SendButton(Dimension dimension, VoiceSenderSet senderSet) {
-        this.setPreferredSize(dimension);
+    public SendButton(VoiceSenderSet senderSet, Supplier<String> getHostName) {
+        this.setPreferredSize(new Dimension(100, 60));
         this.setText("Tap to send");
-        this.addActionListener(new SendButtonListener(this::setText, senderSet));
+        this.addActionListener(new SendButtonListener(getHostName, this::setText, senderSet));
     }
 }
