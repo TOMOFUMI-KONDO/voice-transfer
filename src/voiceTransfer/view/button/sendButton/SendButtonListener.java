@@ -34,7 +34,7 @@ public class SendButtonListener implements ActionListener {
             }
             this.setText.accept("Tap to stop Sending");
         } else {
-            System.out.println(this.senderSet.removeSender(this.senderId));
+            this.senderSet.removeSender(this.senderId);
             this.setText.accept("Tap to send");
         }
     }
